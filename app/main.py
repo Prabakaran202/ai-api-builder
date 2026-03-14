@@ -1,10 +1,9 @@
 from fastapi import FastAPI
-from app.routes import router
+from routes import router
 
 app = FastAPI(
-    title="AI API Builder",
-    description="Generate FastAPI APIs using AI",
-    version="1.0"
+    title= "AI API BUILDER",
+    description= "GENERATE AI APIS USING  AI",
+    version= "1.0"
 )
-
 app.include_router(router)

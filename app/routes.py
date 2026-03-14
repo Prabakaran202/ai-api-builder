@@ -1,18 +1,9 @@
 from fastapi import APIRouter
-from app.agent import generate_api
-from app.generator import create_project
+from agent import generate_api
 
 router = APIRouter()
 
-
 @router.post("/generate-api")
-def generate(prompt: str):
-
-    code = generate_api(prompt)
-
-    project = create_project("generated_api", code)
-
-    return {
-        "message": "API project generated",
-        "project": project
-    }
+def create_api(prompt:str):
+    api_code = generate_api(prompt)
+    return {"api_code": api_code}
