@@ -1,0 +1,46 @@
+import os
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+OLLAMA_MODEL = "phi3:mini"  # or "mistral"
+
+SYSTEM_PROMPT = """
+You are a FastAPI expert developer.
+Generate a complete, production-ready FastAPI endpoint.
+
+User request: {prompt}
+
+Requirements:
+- Include all necessary imports
+- Add Pydantic models with Field validation
+- Add proper HTTPException error handling
+- Add CRUD operations if needed
+- Add helpful comments
+
+Return ONLY raw Python code.
+No markdown, no explanation, no backticks.
+"""
+
+def validate_code(code: str) -> bool:
+    required = ["from fastapi", "FastAPI()", "def "]
+    return any(keyword in code for keyword in required)
+
+def generate_api(prompt: str) -> str:
+    try:
+        res = requests.post("http://localhost:11434/api/generate", json={
+            "model": OLLAMA_MODEL,
+            "prompt": SYSTEM_PROMPT.format(prompt=prompt),
+            "stream": False
+        })
+
+        code = res.json()["response"].strip()
+
+        if not validate_code(code):
+            raise Exception("Generated code invalid!")
+
+        return code
+
+    except Exception as e:
+        raise Exception(f"Ollama failed! Error: {e}")
