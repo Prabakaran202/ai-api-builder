@@ -1,16 +1,10 @@
 import os
 from dotenv import load_dotenv
-from google import genai
+from groq import Groq
 
 load_dotenv()
 
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-
-MODELS = [
-    "gemini-2.0-flash",
-    "gemini-1.5-pro",
-    "gemini-1.5-flash",
-]
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 SYSTEM_PROMPT = """
 You are a FastAPI expert developer.
@@ -29,28 +23,30 @@ Return ONLY raw Python code.
 No markdown, no explanation, no backticks.
 """
 def validate_code(code: str) -> bool:
+<<<<<<< HEAD
     required = ["from fastapi", "FastAPI(", "def "]
+=======
+    required = ["from fastapi", "def "]
+>>>>>>> 24483fe (newnew)
     return any(keyword in code for keyword in required)
 
 def generate_api(prompt: str) -> str:
-    last_error = None
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {
+                    "role": "user",
+                    "content": SYSTEM_PROMPT.format(prompt=prompt)
+                }
+            ]
+        )
+        code = response.choices[0].message.content.strip()
 
-    for model in MODELS:
-        try:
-            response = client.models.generate_content(
-                model=model,
-                contents=SYSTEM_PROMPT.format(prompt=prompt)
-            )
-            code = response.text.strip()
+        if not validate_code(code):
+            raise Exception("Generated code invalid!")
 
-            # Validate generated code
-            if not validate_code(code):
-                continue
+        return code
 
-            return code
-
-        except Exception as e:
-            last_error = e
-            continue
-
-    raise Exception(f"All models failed! Last error: {last_error}")
+    except Exception as e:
+        raise Exception(f"Groq failed! Error: {e}")
