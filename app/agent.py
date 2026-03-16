@@ -1,7 +1,7 @@
 import requests
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL = "llama3"
+MODEL = "phi3"
 
 SYSTEM_PROMPT = """You are a FastAPI expert developer.
 Generate a COMPLETE FastAPI project with ALL of these files:
@@ -16,7 +16,7 @@ Generate a COMPLETE FastAPI project with ALL of these files:
 - SQLite database
 - SessionLocal and Base
 
-# === models.py ===
+# === models.py ===s
 - SQLAlchemy ORM models
 - All necessary columns with types
 
@@ -79,10 +79,10 @@ def generate_api(prompt: str) -> str:
                 "prompt": full_prompt,
                 "stream": False
             },
-            timeout=120
+            timeout=400
         )
 
-        if response.status_code != 200:
+        if response.status_code != 400:
             raise Exception(f"Ollama error: {response.status_code}")
 
         code = response.json().get("response", "").strip()

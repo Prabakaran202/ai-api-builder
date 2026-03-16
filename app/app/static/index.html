@@ -371,7 +371,7 @@
     outputPanel.classList.remove('visible');
 
     try {
-      const res = await fetch('http://127.0.0.1:8000/generate-api', {
+      const res = await fetch('http://127.0.0.1:8000/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt })

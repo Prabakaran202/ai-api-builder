@@ -1,5 +1,9 @@
 fastapi
 uvicorn
-google-generativeai
+requests
 python-dotenv
-google-genai
+pydantic
+sqlalchemy
+jinja2
+ollama
+httpx

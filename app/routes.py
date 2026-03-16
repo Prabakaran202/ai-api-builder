@@ -51,7 +51,7 @@ class ApiResponse(BaseModel):
 # Route
 # ========================
 @router.post(
-    "/generate-api",
+    "/api/generate",
     response_model=ApiResponse,
     summary="Generate FastAPI Code",
     description="Converts natural language to FastAPI backend"
