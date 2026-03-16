@@ -28,9 +28,8 @@ Requirements:
 Return ONLY raw Python code.
 No markdown, no explanation, no backticks.
 """
-
 def validate_code(code: str) -> bool:
-    required = ["from fastapi", "FastAPI()", "def "]
+    required = ["from fastapi", "FastAPI(", "def "]
     return any(keyword in code for keyword in required)
 
 def generate_api(prompt: str) -> str:
