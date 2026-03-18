@@ -7,4 +7,3 @@ sqlalchemy
 alembic
 jinja2
 python-multipart
-ollama
