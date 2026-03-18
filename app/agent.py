@@ -6,7 +6,7 @@ load_dotenv()
 
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-MODEL = "mixtral-8x7b-32768"
+MODEL = "llama-3.3-70b-versatile"
 
 SYSTEM_PROMPT = """You are a FastAPI expert developer.
 Generate a COMPLETE FastAPI project with ALL of these files:
