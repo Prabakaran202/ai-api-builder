@@ -1,7 +1,12 @@
-import requests
+import os
+from groq import Groq
+from dotenv import load_dotenv
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL = "phi3"
+load_dotenv()
+
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+MODEL = "llama3-8b-8192"
 
 SYSTEM_PROMPT = """You are a FastAPI expert developer.
 Generate a COMPLETE FastAPI project with ALL of these files:
@@ -16,7 +21,7 @@ Generate a COMPLETE FastAPI project with ALL of these files:
 - SQLite database
 - SessionLocal and Base
 
-# === models.py ===s
+# === models.py ===
 - SQLAlchemy ORM models
 - All necessary columns with types
 
@@ -29,22 +34,6 @@ Generate a COMPLETE FastAPI project with ALL of these files:
 - Proper HTTPException error handling
 - Depends(get_db) for database session
 
-Requirements:
-- Add helpful comments in each file
-- Use proper type hints
-- Production-ready code
-
-<<<<<<< HEAD
-Return ONLY raw Python code.
-No markdown, no explanation, no backticks.
-"""
-def validate_code(code: str) -> bool:
-<<<<<<< HEAD
-    required = ["from fastapi", "FastAPI(", "def "]
-=======
-    required = ["from fastapi", "def "]
->>>>>>> 24483fe (newnew)
-=======
 IMPORTANT: Separate each file exactly like this:
 # === main.py ===
 <code here>
@@ -52,42 +41,27 @@ IMPORTANT: Separate each file exactly like this:
 # === database.py ===
 <code here>
 
-# === models.py ===
-<code here>
-
-# === schemas.py ===
-<code here>
-
-# === routes.py ===
-<code here>
-
 Return ONLY raw Python code. No markdown, no backticks, no explanation."""
 
 def validate_code(code: str) -> bool:
     required = ["from fastapi", "FastAPI(", "def "]
->>>>>>> f62253e (ne)
     return any(keyword in code for keyword in required)
 
 def generate_api(prompt: str) -> str:
-    full_prompt = f"{SYSTEM_PROMPT}\n\nUser request: {prompt}"
-
     try:
-        response = requests.post(
-            OLLAMA_URL,
-            json={
-                "model": MODEL,
-                "prompt": full_prompt,
-                "stream": False
-            },
-            timeout=400
+        response = client.chat.completions.create(
+            model=MODEL,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": f"Create: {prompt}"}
+            ],
+            temperature=0.3,
+            max_tokens=4096
         )
 
-        if response.status_code != 400:
-            raise Exception(f"Ollama error: {response.status_code}")
+        code = response.choices[0].message.content.strip()
 
-        code = response.json().get("response", "").strip()
-
-        # Clean markdown backticks if model adds them
+        # Clean backticks if model adds them
         if code.startswith("```"):
             code = code.split("\n", 1)[-1]
         if code.endswith("```"):
@@ -100,8 +74,5 @@ def generate_api(prompt: str) -> str:
 
         return code
 
-    except requests.exceptions.ConnectionError:
-        raise Exception("Ollama not running! Start with: ollama serve")
-
     except Exception as e:
-        raise Exception(f"Generation failed: {str(e)}")
+        raise Exception(f"Groq failed: {str(e)}")
