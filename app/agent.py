@@ -19,7 +19,7 @@ Generate a COMPLETE FastAPI project with ALL of these files:
 # === database.py ===
 - SQLAlchemy engine setup
 - SQLite database
-- SessionLocal and Base
+- SessionLocal and Base,
 
 # === models.py ===
 - SQLAlchemy ORM models
